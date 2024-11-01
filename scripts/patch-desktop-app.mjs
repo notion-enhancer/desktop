@@ -47,7 +47,7 @@ const patches = {
     // enable the notion:// protocol, windows-style tab layouts, and
     // quitting the app when the last window is closed on linux
     const isWindows =
-        /(?:"win32"===process\.platform(?:(?=,isFullscreen)|(?=&&\w\.BrowserWindow)|(?=&&\(\w\.app\.requestSingleInstanceLock)))/g,
+        /(?:"win32"===process\.platform(?:(?=,isFullscreen)|(?=&&\w\.BrowserWindow)|(?=&&\(\w\.app\.requestSingleInstanceLock))))/g,
       isWindowsOrLinux = '["win32","linux"].includes(process.platform)';
     replace(isWindows, isWindowsOrLinux);
 
@@ -63,11 +63,10 @@ const patches = {
       protocolInterceptor = `{const n="notion://www.notion.so/__notion-enhancer/";if(e.url.startsWith(n))return require("electron").net.fetch(\`file://\${require("path").join(__dirname,"..","..","node_modules","notion-enhancer",e.url.slice(n.length))}\`)}`;
     prepend(protocolHandler, protocolInterceptor);
 
-    // disable csp entirely. risky? yes. necessary? also yes.
-    // potentially could extend default policy instead someday.
+    // Modify CSP instead of disabling it entirely
     const headerHandler = /\.onHeadersReceived\(\(\((\w),\w\)=>{/,
-      cspDisabler = `{const responseHeaders=$1.responseHeaders;if(responseHeaders){delete responseHeaders["content-security-policy"];return t({responseHeaders})}}`
-    append(headerHandler, cspDisabler);
+      cspModifier = `{const responseHeaders=$1.responseHeaders;if(responseHeaders && responseHeaders["content-security-policy"]){responseHeaders["content-security-policy"] = responseHeaders["content-security-policy"][0].replace(/script-src/g, 'script-src notion: file:');return t({responseHeaders})}}`
+    append(headerHandler, cspModifier);
 
     // expose the app's config + cache + preferences to the global namespace
     // e.g. to enable development mode or check if keep in background is enabled
