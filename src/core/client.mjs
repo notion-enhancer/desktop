@@ -43,10 +43,11 @@ const shouldLoadThemeOverrides = async (api, db) => {
   };
 
 const insertMenu = async (api, db) => {
-  const notionSidebar = `.notion-sidebar-container .notion-sidebar > :nth-child(3) > div > :nth-child(2)`,
+  const notionSettings = `.notion-sidebar-container .notion-sidebar [role="button"]:has(.newSidebarSettings)`,
     { html, addMutationListener, removeMutationListener } = api,
     { addKeyListener, platform, enhancerUrl, onMessage } = api,
     menuButtonIconStyle = await db.get("menuButtonIconStyle"),
+    menuButtonLabel = await db.get("menuButtonLabel"),
     openMenuHotkey = await db.get("openMenuHotkey"),
     menuPing = {
       channel: "notion-enhancer",
@@ -84,18 +85,18 @@ const insertMenu = async (api, db) => {
       icon="notion-enhancer${menuButtonIconStyle === "Monochrome"
         ? "?mask"
         : " text-[16px]"}"
-      >notion-enhancer
+      >${menuButtonLabel}
     <//>`;
   const appendToDom = () => {
     if (!document.body.contains($modal)) document.body.append($modal);
     else if (!document.body.contains($button)) {
-      document.querySelector(notionSidebar)?.append($button);
+      document.querySelector(notionSettings)?.after($button);
     } else removeMutationListener(appendToDom);
   };
   html`<${Tooltip}>
     <b>Configure the notion-enhancer and its mods</b>
   <//>`.attach($button, "right");
-  addMutationListener(notionSidebar, appendToDom);
+  addMutationListener(notionSettings, appendToDom);
   addMutationListener(".notion-app-inner", updateMenuTheme, { subtree: false });
   appendToDom();
 

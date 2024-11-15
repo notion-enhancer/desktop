@@ -15,10 +15,10 @@ function MenuButton(
     class: `notion-enhancer--menu-button flex select-none
     cursor-pointer rounded-[6px] text-[14px] font-medium
     transition hover:bg-[color:var(--theme--bg-hover)]
-    w-full h-[30px] px-[8px] py-[4px] items-center`,
+    w-full h-[30px] px-[10px] py-[4px] items-center`,
   });
   return html`<div ...${props}>
-    <div class="flex items-center justify-center size-[22px] mr-[8px]">
+    <div class="flex items-center justify-center text-[18px] mr-[10px]">
       <i class="i-${icon}"></i>
     </div>
     <div>${children}</div>

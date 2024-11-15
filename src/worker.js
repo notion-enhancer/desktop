@@ -6,6 +6,8 @@
 
 "use strict";
 
+const { escape } = require("querystring");
+
 const IS_ELECTRON = typeof module !== "undefined";
 
 let __db, __statements, __transactions;
@@ -113,15 +115,31 @@ const initDatabase = async () => {
   };
 
 if (IS_ELECTRON) {
-  const { ipcMain } = require("electron"),
-    { reloadApp } = globalThis.__enhancerApi;
-  ipcMain.handle("notion-enhancer", ({}, message) => {
-    if (message?.action !== "query-database") return;
-    const { namespace, query, args } = message.data;
-    return queryDatabase(namespace, query, args);
-  });
-  ipcMain.on("notion-enhancer", ({}, message) => {
-    if (message === "reload-app") reloadApp();
+  const { reloadApp, enhancerUrl } = globalThis.__enhancerApi,
+    { ipcMain, session, app, net } = require("electron");
+  app.on("ready", () => {
+    // proxies notion-enhancer sources over www.notion.so via https
+    const { protocol } = session.fromPartition("persist:notion");
+    protocol.handle("https", (req) => {
+      if (req.url.startsWith(enhancerUrl())) {
+        let url = req.url.slice(enhancerUrl().length);
+        url = `file://${require("path").join(__dirname, url)}`;
+        return net.fetch(url);
+      } else return net.fetch(req);
+    });
+    // webRequest.onHeadersReceived(({ details: { responseHeaders }, callback }) => {
+    //   delete responseHeaders["content-security-policy"];
+    //   return callback({ responseHeaders });
+    // });
+
+    ipcMain.handle("notion-enhancer", ({}, message) => {
+      if (message?.action !== "query-database") return;
+      const { namespace, query, args } = message.data;
+      return queryDatabase(namespace, query, args);
+    });
+    ipcMain.on("notion-enhancer", ({}, message) => {
+      if (message === "reload-app") reloadApp();
+    });
   });
 } else {
   const notionUrl = "https://www.notion.so/",

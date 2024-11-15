@@ -44,8 +44,7 @@ const patches = {
         ));
 
     // https://github.com/notion-enhancer/notion-enhancer/issues/160:
-    // enable the notion:// protocol, windows-style tab layouts, and
-    // quitting the app when the last window is closed on linux
+    // run the app in windows mode on linux (instead of macos mode)
     const isWindows =
         /(?:"win32"===process\.platform(?:(?=,isFullscreen)|(?=&&\w\.BrowserWindow)|(?=&&\(\w\.app\.requestSingleInstanceLock)))/g,
       isWindowsOrLinux = '["win32","linux"].includes(process.platform)';
@@ -54,20 +53,6 @@ const patches = {
     // restore node integration in the renderer process
     // so the notion-enhancer can be require()-d into it
     replace(/sandbox:!0/g, `sandbox:!1,nodeIntegration:!0,session:require('electron').session.fromPartition("persist:notion")`);
-
-    // bypass webRequest filter to load enhancer menu
-    replace(/(\w)\.top!==\w\?(\w)\(\{cancel:!0\}\)/, "$1.top!==$1?$2({})");
-
-    // serve enhancer sources over the notion:// protocol
-    const protocolHandler = /try\{const \w=await \w\.assetCache\.handleRequest\(\w\);/,
-      protocolInterceptor = `{const n="notion://www.notion.so/__notion-enhancer/";if(e.url.startsWith(n))return require("electron").net.fetch(\`file://\${require("path").join(__dirname,"..","..","node_modules","notion-enhancer",e.url.slice(n.length))}\`)}`;
-    prepend(protocolHandler, protocolInterceptor);
-
-    // disable csp entirely. risky? yes. necessary? also yes.
-    // potentially could extend default policy instead someday.
-    const headerHandler = /\.onHeadersReceived\(\(\((\w),\w\)=>{/,
-      cspDisabler = `{const responseHeaders=$1.responseHeaders;if(responseHeaders){delete responseHeaders["content-security-policy"];return t({responseHeaders})}}`
-    append(headerHandler, cspDisabler);
 
     // expose the app's config + cache + preferences to the global namespace
     // e.g. to enable development mode or check if keep in background is enabled

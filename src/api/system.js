@@ -21,11 +21,12 @@ const platform = IS_ELECTRON
   version = IS_ELECTRON
     ? require("notion-enhancer/package.json").version
     : chrome.runtime.getManifest().version,
-  // forms a url to a notion-enhancer asset or source file
-  // that can be accessed reliably over http
-  enhancerUrl = (target) =>
+  // packages a url to access notion-enhancer assets and sources,
+  // proxies via api in desktop app to bypass service worker cache
+  enhancerUrl = (target = "") =>
     IS_ELECTRON
-      ? `notion://www.notion.so/__notion-enhancer/${target.replace(/^\//, "")}`
+      ? "https://www.notion.so/api/__notion-enhancer/" +
+        target.replace(/^\//, "")
       : chrome.runtime.getURL(target),
   // require a file from the root of notion's app/ folder,
   // only available in an electron main process
@@ -96,10 +97,6 @@ const readFile = (file) => {
           { resolve } = require("path");
         return fsp.readFile(resolve(`${__dirname}/../${file}`), "utf-8");
       }
-      // prefer using versions of files cached by the app
-      // or routed through the notion-enhancer's url interception
-      const notionProtocol = "notion://www.notion.so/";
-      file = file.replace(/^https:\/\/www\.notion\.so\//, notionProtocol);
     } else file = file.startsWith("http") ? file : enhancerUrl(file);
     return fetch(file).then((res) => res.text());
   },
@@ -112,8 +109,6 @@ const readFile = (file) => {
         const { resolve } = require("path");
         return require(resolve(`${__dirname}/../${file}`));
       }
-      const notionProtocol = "notion://www.notion.so/";
-      file = file.replace(/^https:\/\/www\.notion\.so\//, notionProtocol);
     } else file = file.startsWith("http") ? file : enhancerUrl(file);
     return fetch(file).then((res) => res.json());
   };

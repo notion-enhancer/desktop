@@ -45,9 +45,15 @@
       "values": ["Auto", "Enabled", "Disabled"]
     },
     {
+      "type": "text",
+      "key": "menuButtonLabel",
+      "description": "Sets the text to label the notion-enhancer button added to Notion's sidebar with.",
+      "value": "notion-enhancer"
+    },
+    {
       "type": "select",
       "key": "menuButtonIconStyle",
-      "description": "Sets whether the notion-enhancer icon added to Notion's sidebar should be coloured or monochrome. The latter style will match the theme's icon colour for users who would like the icon to be less noticeable.",
+      "description": "Sets whether the icon beside the notion-enhancer button added to Notion's sidebar should be coloured or monochrome. The latter style will match the theme's icon colour for users who would like the icon to be less noticeable.",
       "values": ["Colour", "Monochrome"]
     },
     {
