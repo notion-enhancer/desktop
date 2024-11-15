@@ -3,7 +3,9 @@
   "version": "0.5.0",
   "id": "87e077cc-5402-451c-ac70-27cc4ae65546",
   "description": "Adds a table of contents to the side panel to overview and navigate the current page's headings and subheadings.",
-  "tags": ["panel"],
+  "tags": [
+    "panel"
+  ],
   "authors": [
     {
       "name": "dragonwocky",
@@ -28,7 +30,15 @@
       "key": "equationRendering",
       "description": "Attempts to render special symbols from inline equations in headings. Note that position- and size-based formatting will be lost when displaying equations in the Outliner's table of contents. Disable this to display the raw TeX equation instead.",
       "value": true
+    },
+    {
+      "type": "toggle",
+      "key": "replaceFloatingOutline",
+      "description": "Disables Notion's builtin floating table of contents for a complete switch to the Outliner.",
+      "value": true
     }
   ],
-  "clientScripts": ["client.mjs"]
+  "clientScripts": [
+    "client.mjs"
+  ]
 }

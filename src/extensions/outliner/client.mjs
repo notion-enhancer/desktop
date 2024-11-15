@@ -40,6 +40,17 @@ export default async (api, db) => {
     </section>`,
   });
 
+  const replaceFloatingOutline = await db.get("replaceFloatingOutline");
+  if (replaceFloatingOutline) {
+    document.head.append(html`<style>
+      .hide-scrollbar.ignore-scrolling-container:has(
+          div:empty[style*="width"]
+        ) {
+        display: none !important;
+      }
+    </style>`);
+  }
+
   let $page, $scroller;
   const getHeadings = () => {
       if (!$page) return [];
