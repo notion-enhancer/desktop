@@ -84,10 +84,17 @@ export default async (api, db) => {
     updateHeadings = debounce(() => {
       $toc.innerHTML = "";
       if (!$page) return;
+      let indent = 0,
+        prev_level = 0;
       const $frag = document.createDocumentFragment();
       for (const $heading of getHeadings()) {
+        const level = getHeadingLevel($heading);
+        if (level === 1) indent = 1;
+        else if (level > prev_level) indent = Math.min(indent + 1, level);
+        else if (level < prev_level) indent = Math.max(indent - 1, level);
+        prev_level = level;
         $heading._$outline = html`<${Heading}
-          indent=${getHeadingLevel($heading)}
+          ...${{ indent }}
           onclick=${() => {
             if (!$scroller) return;
             const top = getBlockOffset($heading) - 24;
