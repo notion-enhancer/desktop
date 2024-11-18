@@ -1,0 +1,81 @@
+/**
+ * notion-enhancer: indent guides
+ * (c) 2020 Alexa Baldon <alnbaldon@gmail.com> (https://github.com/runargs)
+ * (c) 2024 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
+ * (https://notion-enhancer.github.io/) under the MIT license
+ */
+
+body {
+  --guide--style: solid;
+  --guide--color: var(--theme--fg-border);
+}
+
+/* add indent guides to nested blocks */
+.notion-header-block,
+.notion-sub_header-block,
+.notion-sub_sub_header-block,
+.notion-toggle-block,
+.notion-to_do-block,
+.notion-bulleted_list-block,
+.notion-numbered_list-block {
+  --guide--offset: 32px;
+  --guide--indent: 14px;
+  position: relative;
+  &:before {
+    content: "";
+    position: absolute;
+    height: calc(100% - var(--guide--offset));
+    top: var(--guide--offset);
+    margin-inline-start: var(--guide--indent);
+    border-left: 1px var(--guide--style) var(--guide--color);
+  }
+}
+
+.notion-header-block {
+  --guide--offset: 47px;
+}
+.notion-sub_header-block {
+  --guide--offset: 40px;
+}
+.notion-header-block,
+.notion-sub_header-block,
+.notion-sub_sub_header-block,
+.notion-toggle-block {
+  --guide--indent: 13.4px;
+}
+
+/* add indent guides to toc blocks & the outliner */
+.notion-table_of_contents-block
+  [contenteditable="false"]
+  a
+  > div:not([style*="margin-left: 0"]),
+.notion-enhancer--outliner-heading:not(.pl-\[18px\]) {
+  position: relative;
+  --guide--indent: -16px;
+  &:before {
+    content: "";
+    top: 0;
+    position: absolute;
+    height: 100%;
+    margin-inline-start: var(--guide--indent);
+    border-left: 1px var(--guide--style) var(--guide--color);
+  }
+}
+
+.notion-enhancer--outliner-heading:not(.pl-\[18px\]) {
+  --guide--indent: -12px;
+}
+
+/* add solid background to drag handles,
+otherwise guides show through underneath */
+[role="button"]:is([aria-label="Drag"], [aria-label^="Click to add below"]) {
+  position: relative;
+  &:before {
+    content: "";
+    z-index: -1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--theme--bg-primary);
+  }
+}

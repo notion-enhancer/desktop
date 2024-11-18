@@ -75,7 +75,7 @@ export default async (api, db) => {
     },
     getBlockOffset = ($block) => {
       let offset = 0;
-      while (!$block.matches("[data-content-editable-root]")) {
+      while (!$block?.matches("[data-content-editable-root]")) {
         offset += $block.offsetTop;
         $block = $block.offsetParent;
       }

@@ -1,0 +1,79 @@
+{
+  "name": "Indent Guides",
+  "id": "35815b3b-3916-4dc6-8769-c9c2448f8b57",
+  "version": "0.3.0",
+  "description": "Marks list indentation with vertical lines to make it easy to follow.",
+  "tags": ["extension", "usability", "indentation-lines"],
+  "authors": [
+    {
+      "name": "dragonwocky",
+      "homepage": "https://dragonwocky.me/",
+      "avatar": "https://dragonwocky.me/avatar.jpg"
+    },
+    {
+      "name": "runargs",
+      "email": "alnbaldon@gmail.com",
+      "homepage": "http://github.com/runargs",
+      "avatar": "https://avatars.githubusercontent.com/u/39810066"
+    }
+  ],
+  "options": [
+    {
+      "type": "select",
+      "key": "lineType",
+      "description": "The line style to use for indent guides.",
+      "values": ["Solid", "Dashed", "Dotted"]
+    },
+    {
+      "type": "toggle",
+      "key": "rainbowMode",
+      "description": "By default, indent guides are coloured based on the current theme. Rainbow mode uses alternating colours at each indent level to better connect corresponding blocks in longer lists.",
+      "value": false
+    },
+    { "type": "heading", "label": "List Types" },
+    {
+      "type": "toggle",
+      "key": "to-doList",
+      "description": "Shows indent guides for Notion's to-do list blocks.",
+      "value": true
+    },
+    {
+      "type": "toggle",
+      "key": "bulletedList",
+      "description": "Shows indent guides for Notion's bulleted list blocks.",
+      "value": true
+    },
+    {
+      "type": "toggle",
+      "key": "numberedList",
+      "description": "Shows indent guides for Notion's numbered list blocks.",
+      "value": true
+    },
+    {
+      "type": "toggle",
+      "key": "toggleList",
+      "description": "Shows indent guides for Notion's toggle list blocks.",
+      "value": true
+    },
+    {
+      "type": "toggle",
+      "key": "toggleHeadings",
+      "description": "Shows indent guides for Notion's toggle heading blocks.",
+      "value": true
+    },
+    {
+      "type": "toggle",
+      "key": "tableOfContents",
+      "description": "Shows indent guides for Notion's table of contents blocks.",
+      "value": true
+    },
+    {
+      "type": "toggle",
+      "key": "outliner",
+      "description": "Shows indent guides for the Outliner's table of contents in the side panel.",
+      "value": true
+    }
+  ],
+  "clientStyles": ["client.css"],
+  "clientScripts": ["client.mjs"]
+}

@@ -80,7 +80,14 @@ function Options({ mod }) {
   const { html, modDatabase, setState } = globalThis.__enhancerApi;
   return filterOptionsForRender(mod.options).map((opt) => {
     opt.label ??= camelToSentenceCase(opt.key);
-    if (opt.type === "heading") return html`<${Heading}>${opt.label}<//>`;
+    if (opt.type === "heading") {
+      return typeof opt.description === "string"
+        ? html`<div class="mb-[18px]">
+            <${Heading}>${opt.label}<//>
+            <${Description} innerHTML=${opt.description} />
+          </div>`
+        : html`<${Heading}>${opt.label}<//>`;
+    }
     const _get = async () => (await modDatabase(mod.id)).get(opt.key),
       _set = async (value) => {
         await (await modDatabase(mod.id)).set(opt.key, value);

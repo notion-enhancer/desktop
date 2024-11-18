@@ -20,13 +20,13 @@
     {
       "type": "toggle",
       "key": "numberSingleLines",
-      "description": "Add line numbers to code blocks with only one line.",
+      "description": "Adds line numbers to code blocks with only one line.",
       "value": true
     },
     {
       "type": "select",
       "key": "decorationStyle",
-      "description": "Decorate line numbers with additional styling to distinguish them from code block content.",
+      "description": "Decorates line numbers with additional styling to distinguish them from code block content.",
       "values": ["Border", "Background", "None"]
     }
   ],

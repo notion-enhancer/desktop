@@ -7,6 +7,7 @@
   "extensions/outliner",
   "extensions/word-counter",
   "extensions/line-numbers",
+  "extensions/indent-guides",
   "extensions/right-to-left",
   "extensions/no-peeking",
   "extensions/focus",
