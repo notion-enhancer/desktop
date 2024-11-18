@@ -15,7 +15,7 @@ const pinLabel = "Pin always on top",
 
 export default async function (api, db) {
   const { html, sendMessage } = api,
-    { addMutationListener, removeMutationListener } = api,
+    { addMutationListener } = api,
     displayLabel = ($btn) => {
       if ($btn.innerHTML === $btn.ariaLabel) return;
       $btn.style.width = "auto";
@@ -104,6 +104,7 @@ export default async function (api, db) {
     }
   });
 
+  if (!["linux", "win32", "darwin"].includes(api.platform)) return;
   const alwaysOnTopButton = await db.get("alwaysOnTopButton");
   if (alwaysOnTopButton === "Disabled") return;
   const notionTopbar = ".notion-topbar",
