@@ -6,8 +6,6 @@
 
 "use strict";
 
-const { escape } = require("querystring");
-
 const IS_ELECTRON = typeof module !== "undefined";
 
 let __db, __statements, __transactions;

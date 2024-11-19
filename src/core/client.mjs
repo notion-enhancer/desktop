@@ -43,7 +43,7 @@ const shouldLoadThemeOverrides = async (api, db) => {
   };
 
 const insertMenu = async (api, db) => {
-  const notionSettings = `.notion-sidebar-container .notion-sidebar [role="button"]:has(.newSidebarSettings)`,
+  const inviteMember = `.notion-sidebar-container .notion-sidebar [role="button"]:has(.inviteMember)`,
     { html, addMutationListener, removeMutationListener } = api,
     { addKeyListener, platform, enhancerUrl, onMessage } = api,
     menuButtonIconStyle = await db.get("menuButtonIconStyle"),
@@ -90,13 +90,13 @@ const insertMenu = async (api, db) => {
   const appendToDom = () => {
     if (!document.body.contains($modal)) document.body.append($modal);
     else if (!document.body.contains($button)) {
-      document.querySelector(notionSettings)?.after($button);
+      document.querySelector(inviteMember)?.after($button);
     } else removeMutationListener(appendToDom);
   };
   html`<${Tooltip}>
     <b>Configure the notion-enhancer and its mods</b>
   <//>`.attach($button, "right");
-  addMutationListener(notionSettings, appendToDom);
+  addMutationListener(inviteMember, appendToDom);
   addMutationListener(".notion-app-inner", updateMenuTheme, { subtree: false });
   appendToDom();
 
