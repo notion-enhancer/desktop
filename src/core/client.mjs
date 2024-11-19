@@ -37,9 +37,11 @@ const shouldLoadThemeOverrides = async (api, db) => {
     const { html } = api,
       customStyles = (await db.get("customStyles"))?.content;
     if (!customStyles) return;
-    return document.head.append(html`<style>
-      ${customStyles}
-    </style>`);
+    const $customStyles = html`<style
+      id="__custom"
+      innerHTML=${customStyles}
+    ></style>`;
+    return document.head.append($customStyles);
   };
 
 const insertMenu = async (api, db) => {

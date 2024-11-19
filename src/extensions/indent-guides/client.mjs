@@ -6,63 +6,70 @@
  */
 
 export default async function (api, db) {
-  const lineType = await db.get("lineType"),
+  const { html } = api,
+    guideStyle = await db.get("guideStyle"),
     rainbowMode = await db.get("rainbowMode");
-  document.body.style.setProperty("--guide--style", lineType.toLowerCase());
+  document.body.style.setProperty("--guide--style", guideStyle.toLowerCase());
 
-  // switch (await db.get(["style"])) {
-  //   case "dashed":
-  //     style = "dashed";
-  //     break;
-  //   case "dotted":
-  //     style = "dotted";
-  //     break;
-  //   case "soft":
-  //     opacity = 0.25;
-  //     break;
-  //   case "rainbow":
-  //     opacity = 0.7;
-  //     rainbow = true;
-  //     break;
-  // }
+  const nestedTargets = [],
+    outlineTargets = [];
+  for (const [listType, selectors] of [
+    ["to-doList", [".notion-to_do-block"]],
+    ["bulletedList", [".notion-bulleted_list-block"]],
+    ["numberedList", [".notion-numbered_list-block"]],
+    ["toggleList", [".notion-toggle-block"]],
+    [
+      "toggleHeadings",
+      [
+        ".notion-header-block",
+        ".notion-sub_header-block",
+        ".notion-sub_sub_header-block",
+      ],
+    ],
+  ]) {
+    if (await db.get(listType)) nestedTargets.push(...selectors);
+  }
+  if (await db.get("tableOfContents"))
+    outlineTargets.push(".notion-table_of_contents-block");
+  if (await db.get("outliner"))
+    outlineTargets.push(".notion-enhancer--outliner-heading");
 
-  // const colors = ['red', 'pink', 'purple', 'blue', 'green', 'yellow'];
-  // colors.push(...colors, ...colors, ...colors, 'gray');
-
-  // for (const listType of ['bulleted_list', 'numbered_list', 'to_do', 'toggle']) {
-  //   if (!(await db.get([listType]))) continue;
-  //   css += `
-  //     .notion-page-content .notion-${listType}-block > div > div:last-child::before {
-  //       border-left: 1px ${style} var(--indentation_lines--color, currentColor);
-  //       opacity: ${opacity};
-  //     }`;
-
-  //   if (rainbow) {
-  //     for (let i = 0; i < colors.length; i++) {
-  //       css += `
-  //         .notion-page-content ${`.notion-${listType}-block `.repeat(i + 1)}
-  //           > div > div:last-child::before {
-  //           --indentation_lines--color: var(--theme--text_${colors[i]});
-  //         }`;
-  //     }
-  //   }
-  // }
-
-  // if (await db.get(['toggle_header'])) {
-  //   css += `
-  //     .notion-page-content [class$=header-block] > div > div > div:last-child::before {
-  //       border-left: 1px ${style} var(--indentation_lines--color, currentColor);
-  //       opacity: ${opacity};
-  //     }`;
-
-  //   if (rainbow) {
-  //     for (let i = 0; i < colors.length; i++) {
-  //       css += `
-  //       .notion-page-content ${`[class$=header-block] `.repeat(i + 1)}
-  //         > div > div > div:last-child::before{
-  //         --indentation_lines--color: var(--theme--text_${colors[i]});
-  //       }`;
-  //     }
-  //   }
-  // }
+  let css = `${[...nestedTargets, ...outlineTargets].join(",")} {
+    --guide--opacity: 1;
+  }`;
+  if (rainbowMode) {
+    const selector = `:is(${nestedTargets.join(",")})`,
+      opacity = `--guide--opacity: 0.5;`,
+      colours = [
+        "red",
+        "pink",
+        "purple",
+        "blue",
+        "green",
+        "yellow",
+        "orange",
+        "brown",
+      ];
+    colours.push(...colours, ...colours, ...colours, "gray");
+    for (let i = 0; i < colours.length; i++) {
+      css += `${(selector + " ").repeat(i + 1)} {
+        --guide--color: var(--theme--fg-${colours[i]});
+        ${opacity}
+      }`;
+    }
+    css += `
+    .notion-table_of_contents-block [contenteditable="false"] a
+      > div[style*="margin-left: 24px"],
+    .notion-enhancer--outliner-heading.pl-\\[36px\\] {
+      --guide--color: var(--theme--fg-${colours[0]});
+       ${opacity}
+    }
+    .notion-table_of_contents-block [contenteditable="false"] a
+      > div[style*="margin-left: 48px"],
+    .notion-enhancer--outliner-heading.pl-\\[54px\\] {
+      --guide--color: var(--theme--fg-${colours[1]});
+       ${opacity}
+    }`;
+  }
+  document.head.append(html`<style innerHTML=${css}></style>`);
 }

@@ -20,8 +20,8 @@
   "options": [
     {
       "type": "select",
-      "key": "lineType",
-      "description": "The line style to use for indent guides.",
+      "key": "guideStyle",
+      "description": "The type of line to use for indent guides.",
       "values": ["Solid", "Dashed", "Dotted"]
     },
     {

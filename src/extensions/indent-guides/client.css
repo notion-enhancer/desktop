@@ -8,6 +8,7 @@
 body {
   --guide--style: solid;
   --guide--color: var(--theme--fg-border);
+  --guide--opacity: 0;
 }
 
 /* add indent guides to nested blocks */
@@ -28,6 +29,7 @@ body {
     top: var(--guide--offset);
     margin-inline-start: var(--guide--indent);
     border-left: 1px var(--guide--style) var(--guide--color);
+    opacity: var(--guide--opacity);
   }
 }
 
@@ -59,6 +61,7 @@ body {
     height: 100%;
     margin-inline-start: var(--guide--indent);
     border-left: 1px var(--guide--style) var(--guide--color);
+    opacity: var(--guide--opacity);
   }
 }
 
