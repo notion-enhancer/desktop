@@ -93,27 +93,42 @@ const backupApp = async () => {
     await fsp.rename(archive + ".bak", archive);
     return true;
   },
-  enhanceApp = async (debug = false) => {
+  enhanceApp = async (debug = false, directoryMode = false) => {
     const app = getResourcePath("app"),
       archive = getResourcePath("app.asar");
-    if (!existsSync(archive)) return false;
-    if (existsSync(app)) await fsp.rm(app, { recursive: true, force: true });
-    await fsp.mkdir(app);
-    // extract archive to folder and apply patches
-    for (let file of asar.listPackage(archive)) {
-      file = file.replace(/^\//g, "");
-      const stat = asar.statFile(archive, file),
-        isFolder = !!stat.files,
-        isSymlink = !!stat.link,
-        isExecutable = stat.executable,
-        appPath = resolve(app, file);
-      if (isFolder) {
-        await fsp.mkdir(appPath);
-      } else if (isSymlink) {
-        await fsp.symlink(appPath, resolve(app, link));
-      } else {
-        await fsp.writeFile(appPath, patch(file, extractFile(file)));
-        if (isExecutable) await fsp.chmod(appPath, "755");
+    // directory mode acts on pre-extracted sources
+    // as part of the notion-repackaged build process
+    if (directoryMode) {
+      if (!existsSync(app)) return false;
+      for (let file of await fsp.readdir(app, { recursive: true })) {
+        file = file.replace(/^\//g, "");
+        const appPath = resolve(app, file),
+          stat = await fsp.stat(appPath);
+        if (stat.isFile()) {
+          const content = await fsp.readFile(appPath);
+          await fsp.writeFile(appPath, patch(file, content));
+        }
+      }
+    } else {
+      if (!existsSync(archive)) return false;
+      if (existsSync(app)) await fsp.rm(app, { recursive: true, force: true });
+      await fsp.mkdir(app);
+      // extract archive to folder and apply patches
+      for (let file of asar.listPackage(archive)) {
+        file = file.replace(/^\//g, "");
+        const stat = asar.statFile(archive, file),
+          isFolder = !!stat.files,
+          isSymlink = !!stat.link,
+          isExecutable = stat.executable,
+          appPath = resolve(app, file);
+        if (isFolder) {
+          await fsp.mkdir(appPath);
+        } else if (isSymlink) {
+          await fsp.symlink(appPath, resolve(app, link));
+        } else {
+          await fsp.writeFile(appPath, patch(file, extractFile(file)));
+          if (isExecutable) await fsp.chmod(appPath, "755");
+        }
       }
     }
     // insert the notion-enhancer/src folder into notion's node_modules
@@ -126,10 +141,12 @@ const backupApp = async () => {
       excludes = ["bin", "type", "scripts", "engines", "dependencies"];
     for (const key of excludes) delete manifest[key];
     await fsp.writeFile(insertManifest, JSON.stringify(manifest));
-    // re-package enhanced sources into executable archive
-    await asar.createPackage(app, archive);
-    // cleanup extracted files unless in debug mode
-    if (!debug) await fsp.rm(app, { recursive: true });
+    if (!directoryMode) {
+      // re-package enhanced sources into executable archive
+      await asar.createPackage(app, archive);
+      // cleanup extracted files unless in debug mode
+      if (!debug) await fsp.rm(app, { recursive: true });
+    }
     return true;
   };
 

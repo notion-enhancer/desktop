@@ -38,18 +38,9 @@ export default async function (api, db) {
     --guide--opacity: 1;
   }`;
   if (rainbowMode) {
-    const selector = `:is(${nestedTargets.join(",")})`,
-      opacity = `--guide--opacity: 0.5;`,
-      colours = [
-        "red",
-        "pink",
-        "purple",
-        "blue",
-        "green",
-        "yellow",
-        "orange",
-        "brown",
-      ];
+    const opacity = `--guide--opacity: 0.5;`,
+      selector = `:is(${nestedTargets.join(",")})`,
+      colours = ["green", "blue", "purple", "pink", "red", "orange", "yellow"];
     colours.push(...colours, ...colours, ...colours, "gray");
     for (let i = 0; i < colours.length; i++) {
       css += `${(selector + " ").repeat(i + 1)} {
